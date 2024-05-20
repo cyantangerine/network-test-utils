@@ -144,7 +144,6 @@ if __name__ == "__main__":
     opened_index = 0
     current = 0
     while progress_index < len(urls):
-        url = urls[opened_index].strip()
         # 检查页面池
         handle = None
         while handle is None:
@@ -188,6 +187,7 @@ if __name__ == "__main__":
                 handle = check_handle
                 break
         if opened_index < len(urls):
+            url = urls[opened_index].strip()
             windows_urls[current] = url
             open_url(url, handle)
             opened_index += 1
