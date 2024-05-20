@@ -19,6 +19,8 @@ from conf import URLS_TXT_PATH
 
         千万不能关闭创建的页面。
         如果页面不能打开，请p键继续后等待自动放弃。
+
+        开始时将打开MAX_PAGES个百度，同时打开开发者工具，请不要操作，打开完毕后自动开始测试。
 '''
 
 MAX_PAGES = 10 # 最多浏览器页数，同时打开的页面数量
@@ -134,10 +136,10 @@ if __name__ == "__main__":
         urls = file.readlines()
 
     res_file = open("firefox_result.csv", "w")
-    res_file.write("url, size, time")
+    res_file.write("url, size, time\n")
     time_start_1 = time.time()
     coordinates = get_mouse_position()
-    print("准备中")
+    print("准备中，请不要操作，准备完毕自动开始")
     open_pages(coordinates[0])
     window_handles = browser.window_handles
     browser.switch_to.window(window_handles[0])
@@ -194,11 +196,10 @@ if __name__ == "__main__":
             windows_urls[current] = url
             open_url("https://" + url, handle)
             opened_index += 1
+            time.sleep(1)
         elif windows_urls[current] != "":
             windows_urls[current] = ""
             open_url("about:blank", handle)
-
-        time.sleep(1)
 
     time_end_1 = time.time()
     print("运行时间："+str(time_end_1 - time_start_1)+"秒")
