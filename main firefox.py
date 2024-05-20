@@ -81,7 +81,7 @@ def get_mouse_position():
 
 def open_url(url, handle):
     browser.switch_to.window(handle)
-    browser.execute_script("window.location=\"https://" + url+"\"")
+    browser.execute_script("window.location=\"" + url+"\"")
     print(f"URL: {url}")
 
 def stop():
@@ -192,7 +192,7 @@ if __name__ == "__main__":
         if opened_index < len(urls):
             url = urls[opened_index].strip()
             windows_urls[current] = url
-            open_url(url, handle)
+            open_url("https://" + url, handle)
             opened_index += 1
         elif windows_urls[current] != "":
             windows_urls[current] = ""
