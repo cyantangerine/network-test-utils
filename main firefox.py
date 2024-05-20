@@ -8,13 +8,19 @@ import pyautogui
 import time
 import keyboard
 import pyperclip
-import threading
 from conf import URLS_TXT_PATH
 
-MAX_PAGES = 10
-PAGE_WINDOW = 3
-REFRESH_TIMES = 10
-REFRESH_ABORT = 1
+'''
+    使用说明：
+        首先安装依赖 pip install -r requirements.txt
+        设定好下面的参数。
+        运行后根据控制台提示进行操作。在设定两个鼠标点位后，将会自动运行。不断切换页面获取数据。当一个页面切换次数达到REFRESH_TIMES，需要手动操作后按p键继续。如果手动的次数达到REFRESH_ABORT次，再次需要手动操作时，将放弃此域名，后续可以手动测试。
+        注意：一般造成手动的原因是页面禁止调试或可能请求google/facebook/youtube等网站，造成联不通，进而一直等待传输完毕（已传输大小一直为0k），需要点击“停止”按钮或“刷新”等到需要等待google时再“停止”，结果自然会显示，按p键继续即可。
+'''
+
+MAX_PAGES = 10 # 最多浏览器页数，同时打开的页面数量
+REFRESH_TIMES = 10 # 需要手动进行操作时的切换次数
+REFRESH_ABORT = 1 # 放弃该域名的手动操作次数
 
 screenWidth, screenHeight = pyautogui.size()
 windowLeft = screenWidth * 0.1
@@ -30,13 +36,13 @@ data_map = [{
 
 def open_pages(p1):
     for i in range(MAX_PAGES - 1):
-        js = 'window.open("about:blank");'
+        js = 'window.open("https://www.baidu.com");'
         browser.execute_script(js)
-        time.sleep(0.3)
+        time.sleep(1)
         pyautogui.hotkey("ctrl", "shift", "e")
-        time.sleep(0.3)
+        time.sleep(0.5)
         pyautogui.click(p1.x, p1.y)
-        time.sleep(0.3)
+        time.sleep(1)
 
 
 def check_load_success():
@@ -99,12 +105,12 @@ def get_data(coordinates, url, index, file):
     index1_e = content.find("kB耗时")
     if index1_s == -1 or index1_e == -1:
         return False
-    content1 = content[index1_s + 5: index1_e].strip()
+    content1 = content[index1_s + 6: index1_e].strip()
     index2_s = content.find("无阻塞时间：")
     index2_e = content.find("秒", index2_s)
     if index2_s == -1 or index2_e == -1:
         return False
-    content2 = content[index2_s + 5: index2_e].strip()
+    content2 = content[index2_s + 6: index2_e].strip()
 
     if (content1 == "0" or content2 == "0"):
         return False
@@ -137,7 +143,6 @@ if __name__ == "__main__":
     progress_index = 0
     current = 0
     while progress_index < len(urls):
-        print(f"进度：{progress_index}/{len(urls)}")
         url = urls[progress_index].strip()
         # 检查页面池
         handle = None
@@ -158,13 +163,14 @@ if __name__ == "__main__":
                             "repeat_time": 0
                         }
                     handle = check_handle
-                    file.write(f"{check_url},超时,超时")
+                    progress_index += 1
+                    print(f"进度：{progress_index}/{len(urls)}")
+                    res_file.write(f"{check_url},超时,超时\n")
                     break
-                # 超过次数仍未加载成功，刷新页面
-                open_url(check_url,check_handle)
-                print("刷新页面")
-                time.sleep(5) # 多等一会
-                continue
+                # 超过次数仍未加载成功，手动等待
+                # open_url(check_url,check_handle)
+                print("等待次数超限，按p继续")
+                keyboard.wait("p")
             if check_load_success():
                 if check_url != "":
                     if get_data(coordinates, check_url, current, res_file):
@@ -173,6 +179,8 @@ if __name__ == "__main__":
                             "last_size": "0",
                             "repeat_time": 0
                         }
+                        progress_index += 1
+                        print(f"进度：{progress_index}/{len(urls)}")
                     else:
                        print(f"取数据存在变化，等待下一次，重复次数{data_map[current]["repeat_time"]}")
                        continue
@@ -181,7 +189,7 @@ if __name__ == "__main__":
             
         windows_urls[current] = url
         open_url(url, handle)
-        progress_index += 1
+        
         time.sleep(1)
 
     time_end_1 = time.time()
