@@ -130,7 +130,7 @@ if __name__ == "__main__":
     with open(URLS_TXT_PATH, "r") as file:
         urls = file.readlines()
 
-    res_file = open("FirefoxRes.csv", "w")
+    res_file = open("firefox_result.csv", "w")
     res_file.write("url, size, time")
     time_start_1 = time.time()
     coordinates = get_mouse_position()
