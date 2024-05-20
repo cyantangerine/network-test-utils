@@ -141,9 +141,10 @@ if __name__ == "__main__":
     time.sleep(0.2)
     total_round = math.ceil(len(urls) / MAX_PAGES)
     progress_index = 0
+    opened_index = 0
     current = 0
     while progress_index < len(urls):
-        url = urls[progress_index].strip()
+        url = urls[opened_index].strip()
         # 检查页面池
         handle = None
         while handle is None:
@@ -186,10 +187,14 @@ if __name__ == "__main__":
                        continue
                 handle = check_handle
                 break
-            
-        windows_urls[current] = url
-        open_url(url, handle)
-        
+        if opened_index < len(urls):
+            windows_urls[current] = url
+            open_url(url, handle)
+            opened_index += 1
+        elif windows_urls[current] != "":
+            windows_urls[current] = ""
+            open_url("about:blank", handle)
+
         time.sleep(1)
 
     time_end_1 = time.time()

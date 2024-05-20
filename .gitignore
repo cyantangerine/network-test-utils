@@ -5,3 +5,4 @@ pic/*
 **/__pycache__/**
 *.pyc
 FirefoxRes.csv
+firefox_result.csv
