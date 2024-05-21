@@ -160,7 +160,7 @@ if __name__ == "__main__":
             print("切换到："+check_url)
             time.sleep(0.2)
             data_map[current]["repeat_time"] += 1
-            if 0 == data_map[current]["repeat_time"] % REFRESH_TIMES:
+            if check_url != "" and 0 == data_map[current]["repeat_time"] % REFRESH_TIMES:
                 if REFRESH_ABORT+1 == data_map[current]["repeat_time"] // REFRESH_TIMES:
                     # 超过刷新上限，放弃
                     data_map[current] = {

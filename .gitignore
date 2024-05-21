@@ -6,3 +6,5 @@ pic/*
 *.pyc
 FirefoxRes.csv
 firefox_result.csv
+tcping_result.csv
+tracert_result.csv
