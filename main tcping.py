@@ -1,14 +1,13 @@
-
 import operation
 import threading
 import subprocess
-from conf import URLS_TXT_PATH
+from conf import URLS_TXT_PATH, RESULT_PATH
 
 urls_file = open(URLS_TXT_PATH)
 urls = urls_file.readlines()
 
-res_file = open("./tcping_result.csv", "w")
-res_file.write("url, loss, latency\n")
+res_file = open(RESULT_PATH + "/tcping_result.csv", "w")
+res_file.write("url, latency, loss\n")
 
 mappings = {}
 mappings_first = {}
@@ -18,7 +17,7 @@ CURRENT = 0
 
 
 def print_process():
-    print(f"总进度：{CURRENT}/{TOTAL}, {round(CURRENT/TOTAL*100, 2)}%")
+    print(f"总进度：{CURRENT}/{TOTAL}, {round(CURRENT / TOTAL * 100, 2)}%")
 
 
 def cb(process: subprocess.Popen, output: str, index: int, args=None) -> operation.OperationResult:
@@ -30,7 +29,7 @@ def cb(process: subprocess.Popen, output: str, index: int, args=None) -> operati
         mappings_first[id] = 99
         mappings_name[id] = url
 
-    if mappings_first[id]== 99 and output.find("Ping statistics for") != -1:
+    if mappings_first[id] == 99 and output.find("Ping statistics for") != -1:
         mappings_first[id] = index + 2
         print(f"=====RESULT FOR {url}=====")
     if index == mappings_first[id]:
@@ -39,9 +38,9 @@ def cb(process: subprocess.Popen, output: str, index: int, args=None) -> operati
         loss = output[start_index:end_index]
         mappings[id].append(loss)
         print(f"====={url}:loss:{loss}=====")
-        if round(float(loss),0)==100:
+        if round(float(loss), 0) == 100:
             mappings_first[id] -= 1
-    elif index == mappings_first[id]+2:
+    elif index == mappings_first[id] + 2:
         if output.find("unable to connect") != -1:
             mappings[id].append("N/A")
         else:
@@ -50,10 +49,11 @@ def cb(process: subprocess.Popen, output: str, index: int, args=None) -> operati
             latency = output[start_index:-2]
             mappings[id].append(latency)
         print(f"====={url}:latency:{mappings[id][-1]}=====")
-        res_file.write(f"{mappings_name[id]},{
-                           ",".join(mappings[id])}\n")
+
+        res_file.write(f"{mappings_name[id]},{mappings[id][1].replace('ms', '')},{mappings[id][0]}\n")
         CURRENT += 1
         print_process()
+
 
 def processor(url, index):
     operation.run_program_with_command_line(
@@ -67,7 +67,7 @@ def processor(url, index):
 threads = []
 TOTAL = len(urls)
 for (index, url) in enumerate(urls):
-    #processor(url, index)
+    # processor(url, index)
     t = threading.Thread(target=processor, args=[url, index])
     t.start()
     threads.append(t)

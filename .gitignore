@@ -1,10 +1,7 @@
 old/*
 mytest/*
 pic/*
-1.py
+result/*
 **/__pycache__/**
 *.pyc
-FirefoxRes.csv
-firefox_result.csv
-tcping_result.csv
-tracert_result.csv
+geckodriver.log

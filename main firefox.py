@@ -8,7 +8,7 @@ import pyautogui
 import time
 import keyboard
 import pyperclip
-from conf import URLS_TXT_PATH
+from conf import URLS_TXT_PATH, RESULT_PATH
 
 '''
     使用说明：
@@ -23,9 +23,9 @@ from conf import URLS_TXT_PATH
         开始时将打开MAX_PAGES个百度，同时打开开发者工具，请不要操作，打开完毕后自动开始测试。
 '''
 
-MAX_PAGES = 10 # 最多浏览器页数，同时打开的页面数量
-REFRESH_TIMES = 10 # 需要手动进行操作时的切换次数
-REFRESH_ABORT = 1 # 放弃该域名的手动操作次数
+MAX_PAGES = 10  # 最多浏览器页数，同时打开的页面数量
+REFRESH_TIMES = 10  # 需要手动进行操作时的切换次数
+REFRESH_ABORT = 1  # 放弃该域名的手动操作次数
 
 screenWidth, screenHeight = pyautogui.size()
 windowLeft = screenWidth * 0.1
@@ -52,8 +52,8 @@ def open_pages(p1):
 
 def check_load_success():
     # 页面加载完成
-    #wait = WebDriverWait(browser, 1)
-    #wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+    # wait = WebDriverWait(browser, 1)
+    # wait.until(EC.presence_of_element_located((By.TAG_NAME, "body")))
     # 判断页面是否完全加载
     if browser.execute_script("return document.readyState") == "complete":
         print("页面加载完成")
@@ -83,12 +83,14 @@ def get_mouse_position():
 
 def open_url(url, handle):
     browser.switch_to.window(handle)
-    browser.execute_script("window.location=\"" + url+"\"")
+    browser.execute_script("window.location=\"" + url + "\"")
     print(f"URL: {url}")
+
 
 def stop():
     # browser.quit()
     exit(1)
+
 
 def get_data(coordinates, url, index, file):
     last_data = data_map[index]["last_size"]
@@ -117,9 +119,9 @@ def get_data(coordinates, url, index, file):
         return False
     content2 = content[index2_s + 6: index2_e].strip()
 
-    if (content1 == "0" or content2 == "0"):
+    if content1 == "0" or content2 == "0":
         return False
-    if (content1 == last_data):
+    if content1 == last_data:
         print(f"{url}, 已传输大小: {content1} kB; 无阻塞时间: {content2} 秒")
         file.write(f"{url},{content1},{content2}\n")
         return True
@@ -135,7 +137,7 @@ if __name__ == "__main__":
     with open(URLS_TXT_PATH, "r") as file:
         urls = file.readlines()
 
-    res_file = open("firefox_result.csv", "w")
+    res_file = open(RESULT_PATH + "firefox_result.csv", "w")
     res_file.write("url, size, time\n")
     time_start_1 = time.time()
     coordinates = get_mouse_position()
@@ -157,16 +159,16 @@ if __name__ == "__main__":
             check_handle = window_handles[current]
             browser.switch_to.window(check_handle)
             check_url = windows_urls[current]
-            print("切换到："+check_url)
+            print("切换到：" + check_url)
             time.sleep(0.2)
             data_map[current]["repeat_time"] += 1
             if check_url != "" and 0 == data_map[current]["repeat_time"] % REFRESH_TIMES:
-                if REFRESH_ABORT+1 == data_map[current]["repeat_time"] // REFRESH_TIMES:
+                if REFRESH_ABORT + 1 == data_map[current]["repeat_time"] // REFRESH_TIMES:
                     # 超过刷新上限，放弃
                     data_map[current] = {
-                            "last_size": "0",
-                            "repeat_time": 0
-                        }
+                        "last_size": "0",
+                        "repeat_time": 0
+                    }
                     handle = check_handle
                     progress_index += 1
                     print(f"进度：{progress_index}/{len(urls)}")
@@ -179,7 +181,7 @@ if __name__ == "__main__":
             if check_load_success():
                 if check_url != "":
                     if get_data(coordinates, check_url, current, res_file):
-                        print(f"取数据成功，重复次数{data_map[current]["repeat_time"]}")
+                        print(f"取数据成功，重复次数{data_map[current]['repeat_time']}")
                         data_map[current] = {
                             "last_size": "0",
                             "repeat_time": 0
@@ -187,8 +189,8 @@ if __name__ == "__main__":
                         progress_index += 1
                         print(f"进度：{progress_index}/{len(urls)}")
                     else:
-                       print(f"取数据存在变化，等待下一次，重复次数{data_map[current]["repeat_time"]}")
-                       continue
+                        print(f"取数据存在变化，等待下一次，重复次数{data_map[current]['repeat_time']}")
+                        continue
                 handle = check_handle
                 break
         if opened_index < len(urls):
@@ -202,7 +204,7 @@ if __name__ == "__main__":
             open_url("about:blank", handle)
 
     time_end_1 = time.time()
-    print("运行时间："+str(time_end_1 - time_start_1)+"秒")
+    print("运行时间：" + str(time_end_1 - time_start_1) + "秒")
     res_file.close()
     # 关闭浏览器
     # browser.quit()

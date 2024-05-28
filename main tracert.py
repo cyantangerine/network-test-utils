@@ -2,13 +2,12 @@
 import operation
 import threading
 import subprocess
-import ipaddress
 from util.net import check_ip_is_internet
-from conf import URLS_TXT_PATH
+from conf import URLS_TXT_PATH, RESULT_PATH
 
 urls_file = open(URLS_TXT_PATH)
 urls = urls_file.readlines()
-res_file = open("./tracert_result.csv", "w")
+res_file = open(RESULT_PATH + "/tracert_result.csv", "w")
 res_file.write("url, 首个非本地ip,, 跳\n")
 
 mappings = {}
@@ -36,7 +35,7 @@ def cb(process: subprocess.Popen, output: str, index: int, args = None)  -> oper
         #     print(mappings_name[id])
     else:
         if(output.find("跟踪完成")!=-1):
-            res_file.write(f"{args[0]},{mappings_first[id]},,{",".join(mappings[id])}\n")
+            res_file.write(f"{args[0]},{mappings_first[id]},,{','.join(mappings[id])}\n")
             CURRENT+=1
             print_process()
         elif len(output) > 5:

@@ -1,9 +1,9 @@
-
 import subprocess
 import threading
-from typing import Callable, Union, List
+from typing import Callable, Union, List, Tuple
 from conf import BIN_PATH, SUDO_PASSWD
 from util import platform
+
 
 class OperationResult:
     def __init__(self, code: int, status: bool, message: str):
@@ -12,7 +12,7 @@ class OperationResult:
         self.message = message
 
     def __str__(self):
-        return '{'+f"code: {self.code}, status: {self.status}, message: {self.message}"+'}'
+        return '{' + f"code: {self.code}, status: {self.status}, message: {self.message}" + '}'
 
     def __repr__(self):
         return self.__str__()
@@ -42,7 +42,8 @@ def __subthread_reading_worker(process: subprocess.Popen, callback: Callable[[su
         index += 1
 
 
-def __close_pipe_and_wait(process: subprocess.Popen, subthread: threading.Thread, do_not_raise_permission_error=False, kill=False) -> int:
+def __close_pipe_and_wait(process: subprocess.Popen, subthread: threading.Thread, do_not_raise_permission_error=False,
+                          kill=False) -> int:
     try:
         if kill:
             process.terminate()
@@ -58,7 +59,9 @@ def __close_pipe_and_wait(process: subprocess.Popen, subthread: threading.Thread
     return process.returncode
 
 
-def __open_pipe_with_multi_process(command: List[str], callback: Callable[[subprocess.Popen, str, int], None] = __callback__print) -> tuple[subprocess.Popen, threading.Thread]:
+def __open_pipe_with_multi_process(command: List[str],
+                                   callback: Callable[[subprocess.Popen, str, int], None] = __callback__print) -> Tuple[
+    subprocess.Popen, threading.Thread]:
     if command == None:
         raise ValueError("command is None")
     print("运行：", " ".join(command))
@@ -83,11 +86,12 @@ def check_sudo_password() -> OperationResult:
     global SUDO_PASSWD
     result = OperationResult(
         OperationFailedType.WAITING_RESULT, False, "waitting for progress")
-    if(platform.get() == platform.PLATFORM_TYPE.WIN):
+    if (platform.get() == platform.PLATFORM_TYPE.WIN):
         result.code = OperationFailedType.SUCCESS
         result.status = True
         result.message = "password correct"
         return result
+
     def check_correct(process: subprocess.Popen, output: str, index: int):
         print(f"[{index}]输出：", output)
         nonlocal result
@@ -108,6 +112,7 @@ def check_sudo_password() -> OperationResult:
             result.code = OperationFailedType.UNKNWON_ERROR
             result.status = False
             result.message = output
+
     process, thread = __open_pipe_with_multi_process(
         ['sudo', '-S', 'echo', '"password correct"'], check_correct)
     try:
@@ -134,7 +139,7 @@ def set_sudo_password(password: str):
 
 
 def __is_need_sudo() -> bool:
-    if(platform.get() == platform.PLATFORM_TYPE.WIN):
+    if (platform.get() == platform.PLATFORM_TYPE.WIN):
         return False
     print("检查是否需要sudo权限")
     global SUDO_PASSWD
@@ -210,7 +215,11 @@ def check_bin_exist() -> OperationResult:
     returncode = __close_pipe_and_wait(process, thread, True)
     return result
 
-type Cmd_Callback = Union[Callable[[subprocess.Popen, str, int, None], Union[OperationResult, None]], None]
+
+class Cmd_Callback:
+    Union[Callable[[subprocess.Popen, str, int, None], Union[OperationResult, None]], None]
+
+
 def run_root_with_command_line(command: List[str], cmd_callback: Cmd_Callback = None) -> OperationResult:
     """
     运行bin命令行
@@ -240,6 +249,7 @@ def run_root_with_command_line(command: List[str], cmd_callback: Cmd_Callback = 
         result.code = resref.code
         result.status = resref.status
         result.message = resref.message
+
     c = ['sudo', '-S', BIN_PATH]
     c.extend(p for p in command)
     process, thread = __open_pipe_with_multi_process(c, check_correct)
@@ -253,7 +263,8 @@ def run_root_with_command_line(command: List[str], cmd_callback: Cmd_Callback = 
     return result
 
 
-def run_program_with_command_line(program: str = BIN_PATH, command: List[str] = [], cmd_callback: Cmd_Callback = None, pid_ref = [], args = [""]) -> OperationResult:
+def run_program_with_command_line(program: str = BIN_PATH, command: List[str] = [], cmd_callback: Cmd_Callback = None,
+                                  pid_ref=[], args=[""]) -> OperationResult:
     """
     运行命令行
 
@@ -281,10 +292,11 @@ def run_program_with_command_line(program: str = BIN_PATH, command: List[str] = 
         result.code = resref.code
         result.status = resref.status
         result.message = resref.message
+
     c = [program]
     c.extend(p for p in command)
     process, thread = __open_pipe_with_multi_process(c, check_correct)
-    print(f"PID:{process.pid}" )
+    print(f"PID:{process.pid}")
     pid_ref.append(process.pid)
     if __is_need_sudo():
         process.stdin.write(str(SUDO_PASSWD).encode() + b'\n')
