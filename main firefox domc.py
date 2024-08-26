@@ -11,9 +11,9 @@
         开始时将打开MAX_PAGES个百度，同时打开开发者工具，请不要操作，打开完毕后自动开始测试。
 '''
 import pyautogui
-from firefox.time import FirefoxTimeOperator
+from firefox.domc import FirefoxDomcOperator
 
 if __name__ == "__main__":
     pyautogui.FAILSAFE = False
-    fx = FirefoxTimeOperator()
+    fx = FirefoxDomcOperator()
     fx.run()
