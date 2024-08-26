@@ -23,7 +23,8 @@ class FirefoxBaseOperator:
         self.screenWidth, self.screenHeight = pyautogui.size()
         self.windowLeft = self.screenWidth * 0.1
         self.windowWidth, self.windowHeight = self.screenWidth * 0.5, self.screenHeight * 0.5
-        self.browser = webdriver.Firefox()
+        service = webdriver.FirefoxService(executable_path="./geckodriver.exe")
+        self.browser = webdriver.Firefox(service=service)
         self.browser.set_window_rect(self.windowLeft, 0, self.windowWidth, self.windowHeight)
         with open(URLS_TXT_PATH2, "r") as file:
             self.urls = file.readlines()

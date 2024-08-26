@@ -1,5 +1,5 @@
 import os
-FIREFOX_DRIVER_PATH = 'old/geckodriver.exe'
+FIREFOX_DRIVER_PATH = 'geckodriver.exe'
 BIN_PATH = 'tracert'
 URLS_TXT_PATH = "./url1.txt"
 URLS_TXT_PATH2 = "./url2.txt"
