@@ -1,11 +1,12 @@
-import math
-import pyautogui
 import time
 import keyboard
+import pyautogui
 import pyperclip
-from conf import URLS_TXT_PATH, RESULT_PATH, MAX_PAGES, REFRESH_TIMES, REFRESH_ABORT
+
+from conf import RESULT_PATH
 from util.hotkey import SystemHotkey
 from .base import FirefoxBaseOperator
+
 
 # SystemHotkey()
 

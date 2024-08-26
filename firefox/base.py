@@ -1,16 +1,8 @@
-from selenium import webdriver
-import time
-import math
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-import pyautogui
 import time
 import keyboard
-import pyperclip
-from typing import Literal
-
-from conf import MAX_PAGES, URLS_TXT_PATH2, RESULT_PATH, REFRESH_TIMES, REFRESH_ABORT
+import pyautogui
+from selenium import webdriver
+from conf import MAX_PAGES, URLS_TXT_PATH2, REFRESH_TIMES, REFRESH_ABORT
 
 
 class FirefoxBaseOperator:
