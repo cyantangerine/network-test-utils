@@ -1,3 +1,8 @@
+'''
+    tracert 测试
+    直接运行即可
+'''
+
 import time
 
 import operation
