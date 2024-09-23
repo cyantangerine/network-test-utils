@@ -1,8 +1,10 @@
+import time
 import operation
 import threading
 import subprocess
 from conf import URLS_TXT_PATH, RESULT_PATH
 
+start_time = time.time()
 urls_file = open(URLS_TXT_PATH)
 urls = urls_file.readlines()
 urls_file.close()
@@ -83,7 +85,7 @@ for (index, url) in enumerate(urls):
 for t in threads:
     t.join()
 res_file.close()
-
+print("正在保存记录...")
 # 对结果排序
 result_list = sorted(result_list, key=lambda t: t[0])
 res_file = open(result_name, "w")
@@ -91,4 +93,5 @@ res_file.write("url, latency, loss\n")
 for p in result_list:
     res_file.write(f"{p[0]}, {p[1]}, {p[2]}\n")
 res_file.close()
+print(f"运行时间：{time.time()-start_time}s，结果已保存至{result_name}")
 

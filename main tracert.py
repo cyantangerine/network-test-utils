@@ -1,9 +1,11 @@
+import time
+
 import operation
 import threading
 import subprocess
 from util.net import check_ip_is_internet
 from conf import URLS_TXT_PATH, RESULT_PATH
-
+start_time = time.time()
 urls_file = open(URLS_TXT_PATH)
 urls = urls_file.readlines()
 result_name = RESULT_PATH + "/tracert_result.csv"
@@ -79,7 +81,7 @@ for t in threads:
     t.join()
 res_file.close()
 urls_file.close()
-
+print("正在保存记录...")
 # 对结果排序
 result_list = sorted(result_list, key=lambda t: t[0])
 res_file = open(result_name, "w")
@@ -87,3 +89,4 @@ res_file.write("url,首个非本地ip\n")
 for p in result_list:
     res_file.write(f"{p[0]}, {p[1]}\n") # {p[2]}
 res_file.close()
+print(f"运行时间：{time.time()-start_time}s，结果已保存至{result_name}")
