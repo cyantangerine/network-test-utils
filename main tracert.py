@@ -1,4 +1,3 @@
-
 import operation
 import threading
 import subprocess
@@ -7,7 +6,8 @@ from conf import URLS_TXT_PATH, RESULT_PATH
 
 urls_file = open(URLS_TXT_PATH)
 urls = urls_file.readlines()
-res_file = open(RESULT_PATH + "/tracert_result.csv", "w")
+result_name = RESULT_PATH + "/tracert_result.csv"
+res_file = open(result_name, "w")
 res_file.write("url, 首个非本地ip,, 跳\n")
 
 mappings = {}
@@ -15,15 +15,17 @@ mappings_first = {}
 mappings_name = {}
 TOTAL = 0
 CURRENT = 0
+result_list = []
+
 
 def print_process():
-    print(f"总进度：{CURRENT}/{TOTAL}, {round(CURRENT/TOTAL*100, 2)}%")
+    print(f"总进度：{CURRENT}/{TOTAL}, {round(CURRENT / TOTAL * 100, 2)}%")
 
 
-def cb(process: subprocess.Popen, output: str, index: int, args = None)  -> operation.OperationResult:
+def cb(process: subprocess.Popen, output: str, index: int, args=None) -> operation.OperationResult:
     global CURRENT
     id = process.pid
-    if id not in mappings: 
+    if id not in mappings:
         mappings[id] = []
         mappings_first[id] = ""
         mappings_name[id] = ""
@@ -34,25 +36,36 @@ def cb(process: subprocess.Popen, output: str, index: int, args = None)  -> oper
         #     mappings_name[id] = output[output.rfind("到") + 1: output.find("的路由：") - 5].strip()
         #     print(mappings_name[id])
     else:
-        if(output.find("跟踪完成")!=-1):
-            res_file.write(f"{args[0]},{mappings_first[id]},,{','.join(mappings[id])}\n")
-            CURRENT+=1
-            print_process()
-        elif len(output) > 5:
+        # if (output.find("跟踪完成") != -1):
+        #
+        # el
+        if len(output) > 5:
             ip = output.split()[-1].strip()
             mappings[id].append(ip)
             if mappings_first[id] == "" and check_ip_is_internet(ip):
                 mappings_first[id] = ip
-                
 
+                line_res = (args[0], mappings_first[id], ','.join(mappings[id]))
+                result_list.append(line_res)
+                res_file.write(f"{line_res[0]},{line_res[1]},{line_res[2]}\n")
 
+                CURRENT += 1
+                print_process()
+
+                return True
+
+from threading import Semaphore
+semaphore = Semaphore(20)
 def processor(url, index):
+    semaphore.acquire()
     operation.run_program_with_command_line(
         program='tracert',
-        command=['-d', url.strip()],
+        command=["/d" , '-d', url.strip()],
         cmd_callback=cb,
         args=[url.strip()]
     )
+    semaphore.release()
+
 
 threads = []
 TOTAL = len(urls)
@@ -67,3 +80,10 @@ for t in threads:
 res_file.close()
 urls_file.close()
 
+# 对结果排序
+result_list = sorted(result_list, key=lambda t: t[0])
+res_file = open(result_name, "w")
+res_file.write("url,首个非本地ip\n")
+for p in result_list:
+    res_file.write(f"{p[0]}, {p[1]}\n") # {p[2]}
+res_file.close()

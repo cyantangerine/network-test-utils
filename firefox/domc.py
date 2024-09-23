@@ -92,7 +92,7 @@ class FirefoxDomcOperator(FirefoxBaseOperator):
         self.result_list = sorted(self.result_list, key=lambda t: t[0])
         result_name = "firefox_domc_result.csv"
         res_file = open(RESULT_PATH + result_name, "w")
-        res_file.write("url, time\n")
+        res_file.write("url, domctime\n")
         for p in self.result_list:
             res_file.write(f"{p[0]}, {p[1]}\n")
         res_file.close()

@@ -5,9 +5,12 @@ from conf import URLS_TXT_PATH, RESULT_PATH
 
 urls_file = open(URLS_TXT_PATH)
 urls = urls_file.readlines()
+urls_file.close()
 
-res_file = open(RESULT_PATH + "/tcping_result.csv", "w")
+result_name = RESULT_PATH + "/tcping_result.csv"
+res_file = open(result_name, "w")
 res_file.write("url, latency, loss\n")
+result_list = []
 
 mappings = {}
 mappings_first = {}
@@ -50,18 +53,23 @@ def cb(process: subprocess.Popen, output: str, index: int, args=None) -> operati
             mappings[id].append(latency)
         print(f"====={url}:latency:{mappings[id][-1]}=====")
 
-        res_file.write(f"{mappings_name[id]},{mappings[id][1].replace('ms', '')},{mappings[id][0]}\n")
+        line_res = (mappings_name[id], mappings[id][1].replace('ms', ''), mappings[id][0])
+        result_list.append(line_res)
+        res_file.write(f"{line_res[0]},{line_res[1]},{line_res[2]}\n")
         CURRENT += 1
         print_process()
 
-
+from threading import Semaphore
+semaphore = Semaphore(20)
 def processor(url, index):
+    semaphore.acquire()
     operation.run_program_with_command_line(
         program='./tcping.exe',
         command=[f"-n", "20", "-g", "5", "-w", "1", url.strip(), "443"],
         cmd_callback=cb,
         args=[url.strip()]
     )
+    semaphore.release()
 
 
 threads = []
@@ -75,4 +83,12 @@ for (index, url) in enumerate(urls):
 for t in threads:
     t.join()
 res_file.close()
-urls_file.close()
+
+# 对结果排序
+result_list = sorted(result_list, key=lambda t: t[0])
+res_file = open(result_name, "w")
+res_file.write("url, latency, loss\n")
+for p in result_list:
+    res_file.write(f"{p[0]}, {p[1]}, {p[2]}\n")
+res_file.close()
+

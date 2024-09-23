@@ -47,7 +47,8 @@ def __close_pipe_and_wait(process: subprocess.Popen, subthread: threading.Thread
     try:
         if kill:
             process.terminate()
-            subthread.join()
+            print(f"process {process.pid} killed")
+            # subthread.join()
         else:
             subthread.join()
             process.wait()
@@ -288,10 +289,12 @@ def run_program_with_command_line(program: str = BIN_PATH, command: List[str] = 
         resref = cmd_callback(process, output, index, args)
         if resref is None:
             return
+        if resref:
+            __close_pipe_and_wait(process, thread, True, True)
         # 这里可以做一些事情
-        result.code = resref.code
-        result.status = resref.status
-        result.message = resref.message
+        #result.code = resref.code
+        #result.status = resref.status
+        #result.message = resref.message
 
     c = [program]
     c.extend(p for p in command)
