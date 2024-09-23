@@ -5,7 +5,7 @@
 共包含4个测试工具，包括tcping, tracert, firefox的加载速度和DOMC加载时间。
 
 #### 使用方法：
-1. 如果有git可以clone，没有可以点击绿色code按钮-下载zip解压到电脑中。
+1. 如果有git可以复制链接进行clone（推荐，下载Github desktop，方便后续版本更新），没有可以点击绿色code按钮-下载zip解压到电脑中。
 2. 安装Python 3.7及以上版本或使用VS Code的Python扩展。
 3. win+R，输入cmd（打开命令提示符），cd切换到源码文件夹位置，输入
    ```shell
