@@ -2,7 +2,7 @@ import time
 import operation
 import threading
 import subprocess
-from conf import URLS_TXT_PATH, RESULT_PATH
+from conf import URLS_TXT_PATH, RESULT_PATH, MAX_THREADS
 
 start_time = time.time()
 urls_file = open(URLS_TXT_PATH)
@@ -62,7 +62,7 @@ def cb(process: subprocess.Popen, output: str, index: int, args=None) -> operati
         print_process()
 
 from threading import Semaphore
-semaphore = Semaphore(20)
+semaphore = Semaphore(MAX_THREADS)
 def processor(url, index):
     semaphore.acquire()
     operation.run_program_with_command_line(

@@ -4,7 +4,8 @@ import operation
 import threading
 import subprocess
 from util.net import check_ip_is_internet
-from conf import URLS_TXT_PATH, RESULT_PATH
+from conf import URLS_TXT_PATH, RESULT_PATH, MAX_THREADS
+
 start_time = time.time()
 urls_file = open(URLS_TXT_PATH)
 urls = urls_file.readlines()
@@ -57,7 +58,7 @@ def cb(process: subprocess.Popen, output: str, index: int, args=None) -> operati
                 return True
 
 from threading import Semaphore
-semaphore = Semaphore(20)
+semaphore = Semaphore(MAX_THREADS)
 def processor(url, index):
     semaphore.acquire()
     operation.run_program_with_command_line(
