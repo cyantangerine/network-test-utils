@@ -96,5 +96,6 @@ class FirefoxTimeOperator(FirefoxBaseOperator):
         for p in self.result_list:
             res_file.write(f"{p[0]}, {p[1]}, {p[2]}\n")
         res_file.close()
+        print(f"运行完成，结果已保存至{RESULT_PATH + result_name}")
         # 关闭浏览器
         # browser.quit()
