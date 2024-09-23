@@ -4,7 +4,7 @@
 3. win+R，输入cmd（打开命令提示符），cd切换到源码文件夹位置，输入
    ```shell
     cd /d 代码文件夹位置
-   ``
+   ```
    ```shell
     pip install -r requirements.txt 
    ```
@@ -14,6 +14,6 @@
    在终端中需要输入命令运行。
    ```shell
     python main xx.py
-   ``
+   ```
 6. 单项测试完成后，结果将会保存到conf.py设定的结果文件夹中（默认为代码文件夹中的result）。如果测试卡住，在终端或idle中可以按ctrl+c强行停止测试，测试结果可能不完整。
 7. 四项测试完成后，可以均按url字母升序排序，放入到测试结果表格中。
