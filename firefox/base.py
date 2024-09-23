@@ -2,7 +2,7 @@ import time
 import keyboard
 import pyautogui
 from selenium import webdriver
-from conf import MAX_PAGES, URLS_TXT_PATH2, REFRESH_TIMES, REFRESH_ABORT
+from conf import MAX_PAGES, URLS_TXT_PATH2, REFRESH_TIMES, REFRESH_ABORT, REFRESH_AUTO, REFRESH_AUTO_TIMES
 
 
 class FirefoxBaseOperator:
@@ -70,10 +70,18 @@ class FirefoxBaseOperator:
                             fail_todo(check_url, current)
                         self._clear_data_item(current)
                         break
-                    # 超过次数仍未加载成功，手动等待
-                    # open_url(check_url,check_handle)
-                    print("等待次数超限(测试DOMC如果未出现DOMC请刷新)，按p继续")
-                    keyboard.wait("p")
+                    tt = self.data_map[current]["repeat_time"]
+                    if tt and tt / REFRESH_TIMES == REFRESH_AUTO:
+                        print("等待次数超限，自动修复中...")
+                        pyautogui.hotkey("f5")
+                        time.sleep(REFRESH_AUTO_TIMES)
+                        self.browser.execute_script("window.stop();")
+                        time.sleep(0.5)
+                    else:
+                        # 超过次数仍未加载成功，手动等待
+                        # open_url(check_url,check_handle)
+                        print("等待次数超限(测试DOMC如果未出现DOMC请刷新)，按p继续")
+                        keyboard.wait("p")
                 if self.check_load_success():
                     if check_url != "":
                         if function_todo(check_url, current):
