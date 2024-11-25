@@ -12,7 +12,7 @@ BIN_PATH = 'tracert'  # 弃用
 FIREFOX_DRIVER_PATH = 'geckodriver.exe'  # firefox驱动位置，默认无需更改
 MAX_PAGES = 10  # 最多浏览器页数，同时打开的页面数量
 REFRESH_TIMES = 8  # 需要手动进行操作时的切换次数
-REFRESH_ABORT = 2  # 放弃该域名的手动操作次数 需要>自动尝试次数
+REFRESH_ABORT = 1  # 放弃该域名的手动操作次数 需要>=自动尝试次数才会触发自动尝试
 REFRESH_AUTO = 1  # 自动修复尝试次数
 REFRESH_AUTO_TIMES = 11  # 自动修复等待时间
 

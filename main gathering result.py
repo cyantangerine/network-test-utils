@@ -15,6 +15,7 @@ result = pd.merge(df_tracert, df_tcping, on='url', how='outer')
 result = pd.merge(result, df_fire, on='url', how='outer')
 result = pd.merge(result, df_domc, on='url', how='outer')
 
+result.insert(4, 'kBps', result[" size"]/result[' time'])
 
 print(result)
 result.to_excel(RESULT_PATH + f"/results_{time.strftime('%Y%m%d%H%M%S', time.localtime())}.xlsx", index=False)

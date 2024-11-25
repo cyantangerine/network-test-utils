@@ -3,5 +3,6 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/result/firefox_result.csv" charset="GBK" />
     <file url="file://$PROJECT_DIR$/result/tracert_result.csv" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/result/tracert_result.csv" charset="GBK" />
   </component>
 </project>
