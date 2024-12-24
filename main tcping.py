@@ -69,6 +69,10 @@ from threading import Semaphore
 semaphore = Semaphore(MAX_THREADS)
 def processor(url, index):
     semaphore.acquire()
+
+    port = "443"
+    if url.strip() == "agupubs.onlinelibrary.wiley.com":
+        port = 80
     operation.run_program_with_command_line(
         program='./tcping.exe',
         command=[f"-n", "20", "-g", "5", "-w", "1", url.strip(), "443"],

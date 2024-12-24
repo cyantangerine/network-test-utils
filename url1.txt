@@ -15,7 +15,6 @@ iopscience.iop.org
 jcr.clarivate.com
 journals.aps.org
 link.springer.com
-online.sagepub.com
 onlinelibrary.wiley.com
 portal.igpublish.com
 pubs.acs.org

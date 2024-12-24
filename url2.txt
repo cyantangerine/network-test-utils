@@ -6,7 +6,7 @@ ascelibrary.org
 asmedigitalcollection.asme.org
 digital-library.theiet.org
 dl.acm.org
-ebookcentral.proquest.com/auth/lib/ucas/
+ebookcentral.proquest.com/lib/hit/
 epubs.siam.org
 esi.clarivate.com
 ieeexplore.ieee.org
