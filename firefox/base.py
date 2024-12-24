@@ -2,6 +2,8 @@ import time
 import keyboard
 import pyautogui
 from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.common.proxy import *
 from conf import MAX_PAGES, URLS_TXT_PATH2, REFRESH_TIMES, REFRESH_ABORT, REFRESH_AUTO, REFRESH_AUTO_TIMES
 
 
@@ -23,8 +25,30 @@ class FirefoxBaseOperator:
         self.screenWidth, self.screenHeight = pyautogui.size()
         self.windowLeft = self.screenWidth * 0.1
         self.windowWidth, self.windowHeight = self.screenWidth * 0.5, self.screenHeight * 0.5
+        # 设置 Firefox options
+        options = Options()
+        options.set_preference("network.proxy.type", 0)  # 禁用代理
+        options.set_preference("network.proxy.autoconfig_url", "")  # 确保没有 PAC 文件
+        options.set_preference("network.proxy.no_proxies_on", "*")  # 不使用代理
+
+        # 确保 Firefox 不使用系统代理设置
+        options.set_preference("network.proxy.socks", "")
+        options.set_preference("network.proxy.http", "")
+        options.set_preference("network.proxy.ssl", "")
+        options.set_preference("network.proxy.ftp", "")
+        options.add_argument("--no-proxy")
+        options.add_argument("--proxy-server=''")# 不使用代理
+        options.ignore_local_proxy_environment_variables()
+        proxy = Proxy({
+            "proxyType": ProxyType.DIRECT,
+        })
+        options.proxy = proxy
+        # capabilities = webdriver.DesiredCapabilities.FIREFOX
+        # capabilities = capabilities | proxy.to_capabilities()
+        # for key, value in capabilities.items():
+        #     options.set_capability(key, value)
         service = webdriver.FirefoxService(executable_path="./geckodriver.exe")
-        self.browser = webdriver.Firefox(service=service)
+        self.browser = webdriver.Firefox(service=service, options=options)
         self.browser.set_window_rect(self.windowLeft, 0, self.windowWidth, self.windowHeight)
         with open(URLS_TXT_PATH2, "r") as file:
             self.urls = file.readlines()
